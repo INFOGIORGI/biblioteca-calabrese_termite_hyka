@@ -3,10 +3,15 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>{% block titolo%}{% endblock %}</title>
+  <title>{%block titolo%}{%endblock%}</title>
 </head>
 
 <body>
+  <nav>
+    <a href="">Home Page</a>
+    <a href="">Libri</a>
+    <a href="">Aggiungi libro</a>
+  </nav>
   {%block contenuto%}{%endblock%}
 </body>
 
