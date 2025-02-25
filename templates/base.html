@@ -3,16 +3,18 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>{%block titolo%}{%endblock%}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titolo %}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
   <nav>
-    <a href="">Home Page</a>
-    <a href="">Libri</a>
-    <a href="">Aggiungi libro</a>
+    <a href="{{ url_for('homePage') }}">Home Page</a>
+    <a href="{{ url_for('libri') }}">Libri</a>
+    <a href="{{ url_for('aggiungiLibro') }}">Aggiungi libro</a>
   </nav>
-  {%block contenuto%}{%endblock%}
+  {% block contenuto %}{% endblock %}
 </body>
 
 </html>
