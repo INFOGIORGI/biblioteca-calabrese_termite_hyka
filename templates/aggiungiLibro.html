@@ -1,11 +1,88 @@
 {% extends 'base.html' %}
 {% block titolo %}Aggiungi libro{% endblock %}
-{%block contenuto%}
+{% block contenuto %}
 <p>
-    <h1>
-        Aggiungi un nuovo libro
-    </h1>
+<h1>
+    Aggiungi un nuovo libro
+</h1>
 
-    <form action="" method="POST"></form>
+<form action="/aggiungiLibro" method="POST">
+    <h3>ISBN</h3>
+    <input type="text" name="isbn" placeholder="Es. 9783161484100" pattern="\d+" title="Inserisci solo numeri"
+        onkeypress="return /[0-9]/.test(event.key)" oninput="this.value = this.value.replace(/\D/g, '')" />
+
+    <h3>Titolo</h3>
+    <input type="text" name="titolo" placeholder="Es. Il Signore degli Anelli" />
+
+    <h3>CodAutore</h3>
+    <input type="text" name="codAutore" placeholder="Es. Aut001" />
+
+    <h3>Anno</h3>
+    <input type="text" name="anno" placeholder="Es. 2024" pattern="\d+" title="Inserisci solo numeri"
+        onkeypress="return /[0-9]/.test(event.key)" oninput="this.value = this.value.replace(/\D/g, '')" />
+
+    <h3>Categoria</h3>
+    <input type="text" name="categoria" placeholder="Es. Fantascienza" />
+
+    <h3>Prezzo</h3>
+    <input type="text" name="prezzo" id="prezzo" pattern="^\d+([,]\d{1,2})?$" placeholder="Es. 12,50"
+        oninput="this.value = this.value.replace('.', ',')" onkeypress="return /[0-9,]/.test(event.key)" />
+
+    <div class="button-container">
+        <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>
+        <input type="submit" value="Aggiungi" class="submit-button" />
+    </div>
+</form>
+
+<script>
+    function resetForm() {
+        document.querySelector("form").reset();
+    }
+</script>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="flash {{ category }}">{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
 </p>
-{%endblock%}
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .cancel-button {
+        background-color: red;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .submit-button {
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .cancel-button:hover {
+        background-color: darkred;
+    }
+
+    .submit-button:hover {
+        background-color: darkgreen;
+    }
+</style>
+
+{% endblock %}

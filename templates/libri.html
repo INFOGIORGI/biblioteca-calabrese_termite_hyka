@@ -1,11 +1,30 @@
 {% extends 'base.html' %}
 {% block titolo %}Lista libri{% endblock %}
-{%block contenuto%}
-<p>
-    <h1>
-        Lista dei libri presenti in biblioteca
-    </h1>
 
+{% block contenuto %}
+<h1>Lista dei libri presenti in biblioteca</h1>
+
+<div>
+    <!-- Seleziona ordinamento -->
+    <form method="GET" action="/libri">
+        <label for="ordinamento">Ordina per:</label>
+        <select name="ordinamento" id="ordinamento" onchange="this.form.submit()">
+            <option value="Titolo" {% if ordinamento == 'Titolo' %}selected{% endif %}>Titolo</option>
+            <option value="Autore" {% if ordinamento == 'Autore' %}selected{% endif %}>Autore</option>
+        </select>
+
+        <!-- Seleziona genere -->
+        <label for="categoria">Filtra per genere:</label>
+        <select name="categoria" id="categoria" onchange="this.form.submit()">
+            {% for cat in categorie %}
+            <option value="{{ cat }}" {% if categoria_selezionata == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<!-- Tabella con i libri -->
+<div class="table-container">
     <table>
         <tr>
             <th>ISBN</th>
@@ -15,16 +34,16 @@
             <th>Categoria</th>
             <th>Prezzo</th>
         </tr>
-        {%for libro in libri%}
-            <tr>
-                <td>{{libro[0]}}</td>
-                <td>{{libro[1]}}</td>
-                <td>{{libro[2]}}</td>
-                <td>{{libro[3]}}</td>
-                <td>{{libro[4]}}</td>
-                <td>{{libro[5]}}€</td>
-            </tr>
-        {%endfor%}
+        {% for libro in libri %}
+        <tr>
+            <td>{{ libro[0] }}</td>
+            <td>{{ libro[1] }}</td>
+            <td>{{ libro[2] }}</td>
+            <td>{{ libro[3] }}</td>
+            <td>{{ libro[4] }}</td>
+            <td>{{ libro[5] }}€</td>
+        </tr>
+        {% endfor %}
     </table>
-</p>
-{%endblock%}
+</div>
+{% endblock %}

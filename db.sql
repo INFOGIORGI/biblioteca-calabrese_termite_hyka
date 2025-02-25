@@ -52,3 +52,6 @@ INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria, Prezzo) VALUES
 ('9780553380163', 'A Brief History of Time', 'Hawk001', 1988, 'Physics', 15.99),
 ('9781509852826', 'On the Origin of Species', 'Darw001', 1859, 'Biology', 12.50),
 ('9780345331359', 'Cosmos', 'Sagan001', 1980, 'Astronomy', 14.99);
+
+INSERT INTO Autori (CodAutore, Nome, Cognome, DataNascita, DataMorte) VALUES
+('Ein001', 'Albert', 'Einstein', '1879-03-14', '1955-04-18');
