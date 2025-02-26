@@ -24,9 +24,6 @@
     <h3>Categoria</h3>
     <input type="text" name="categoria" placeholder="Es. Fantascienza" />
 
-    <h3>Prezzo</h3>
-    <input type="text" name="prezzo" id="prezzo" pattern="^\d+([,]\d{1,2})?$" placeholder="Es. 12,50"
-        oninput="this.value = this.value.replace('.', ',')" onkeypress="return /[0-9,]/.test(event.key)" />
 
     <div class="button-container">
         <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>

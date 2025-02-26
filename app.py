@@ -54,10 +54,9 @@ def aggiungiLibro():
         codAutore = request.form.get("codAutore")
         anno = request.form.get("anno")
         categoria = request.form.get("categoria")
-        prezzo = request.form.get("prezzo")
 
         anno_int = int(anno)
-        prezzo_float = float(prezzo.replace(",", "."))
+
 
         print(codAutore)
 
@@ -68,8 +67,8 @@ def aggiungiLibro():
         tmp = cursor.fetchall()
 
         if len(tmp) > 0: #codAutore esiste
-            query = "INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria, Prezzo) VALUES (%s,%s,%s,%s,%s,%s)"
-            cursor.execute(query, (isbn, titolo, codAutore, anno_int, categoria, prezzo_float))
+            query = "INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria) VALUES (%s,%s,%s,%s,%s)"
+            cursor.execute(query, (isbn, titolo, codAutore, anno_int, categoria))
             mysql.connection.commit()
             flash("Libro aggiunto correttamente.")
             return redirect(url_for('aggiungiLibro'))

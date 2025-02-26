@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS Libri(
     CodAutore varchar(10) NOT NULL,
     Anno int NOT NULL,
     Categoria varchar(255) NOT NULL,
-    Prezzo float NOT NULL,
 
     FOREIGN KEY (CodAutore) REFERENCES Autori(CodAutore)
 );
@@ -48,10 +47,10 @@ INSERT INTO Autori (CodAutore, Nome, Cognome, DataNascita, DataMorte) VALUES
 ('Darw001', 'Charles', 'Darwin', '1809-02-12', '1882-04-19'),
 ('Sagan001', 'Carl', 'Sagan', '1934-11-09', '1996-12-20');
 
-INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria, Prezzo) VALUES
-('9780553380163', 'A Brief History of Time', 'Hawk001', 1988, 'Physics', 15.99),
-('9781509852826', 'On the Origin of Species', 'Darw001', 1859, 'Biology', 12.50),
-('9780345331359', 'Cosmos', 'Sagan001', 1980, 'Astronomy', 14.99);
+INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria) VALUES
+('9780553380163', 'A Brief History of Time', 'Hawk001', 1988, 'Physics'),
+('9781509852826', 'On the Origin of Species', 'Darw001', 1859, 'Biology'),
+('9780345331359', 'Cosmos', 'Sagan001', 1980, 'Astronomy');
 
 INSERT INTO Autori (CodAutore, Nome, Cognome, DataNascita, DataMorte) VALUES
 ('Ein001', 'Albert', 'Einstein', '1879-03-14', '1955-04-18');
