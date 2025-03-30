@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_mysqldb import MySQL
+import datetime
 
 app = Flask(__name__)
 app.secret_key = "daniel"
@@ -47,11 +48,56 @@ def libri():
 
 @app.route("/gestioneBiblioteca", methods=["GET", "POST"])
 def gestioneBiblioteca():
+
+    ordinamento = request.args.get("ordinamento", "Titolo")
+    categoria_selezionata = request.args.get("categoria", "Tutti")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT DISTINCT Categoria FROM Libri")
+    categorie = [row[0] for row in cursor.fetchall()]
+    categorie.insert(0, "Tutti")
+
+    query = "SELECT * FROM Libri"
+    params = []
+    if categoria_selezionata != "Tutti":
+        query += " WHERE Categoria = %s"
+        params.append(categoria_selezionata)
+
+    if ordinamento == "Autore":
+        query += " ORDER BY CodAutore"
+    else:
+        query += " ORDER BY Titolo"
+
+    cursor.execute(query, params)
+    listaLibri = cursor.fetchall()
+
     if request.method == 'GET':
-        return render_template("gestioneBiblioteca.html")
+        return render_template("gestioneBiblioteca.html", libri=listaLibri, ordinamento=ordinamento, categorie=categorie, categoria_selezionata=categoria_selezionata)
+    
     else:
         tipoForm = request.form.get("form_type")
-        if tipoForm == "autore":
+
+        if tipoForm == "presta":
+            progressivoLibro = request.form.get("progressivoLibro")
+            data_prestito = datetime.date.today()  # Data di oggi
+
+            query = "UPDATE Libri SET PresoInPrestito = 1, DataInizioPrestito = %s WHERE Progressivo = %s AND PresoInPrestito = 0"
+            cursor.execute(query, (data_prestito, progressivoLibro))
+            mysql.connection.commit()
+            flash("Libro prestato con successo.")
+            
+            return redirect(url_for("gestioneBiblioteca"))
+
+        elif tipoForm == "rimuovi_prestito":
+            progressivoLibro = request.form.get("progressivoLibro")
+
+            query = "UPDATE Libri SET PresoInPrestito = 0, DataInizioPrestito = NULL WHERE Progressivo = %s AND PresoInPrestito = 1"
+            cursor.execute(query, (progressivoLibro,))
+            mysql.connection.commit()
+            flash("Prestito rimosso con successo.")
+            return redirect(url_for("gestioneBiblioteca"))
+        
+        elif tipoForm == "autore":
             codAutore = request.form.get("codAutore")
             nome = request.form.get("nome")
             cognome = request.form.get("cognome")
@@ -80,7 +126,7 @@ def gestioneBiblioteca():
 
                 flash("Autore inserito correttamente")
                 return redirect(url_for("gestioneBiblioteca"))
-        else:
+        elif tipoForm == "libro":
             isbn = request.form.get("isbn")
             titolo = request.form.get("titolo")
             codAutore = request.form.get("codAutore")
@@ -99,14 +145,58 @@ def gestioneBiblioteca():
             tmp = cursor.fetchall()
 
             if len(tmp) > 0: #codAutore esiste
-                query = "INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria) VALUES (%s,%s,%s,%s,%s)"
-                cursor.execute(query, (isbn, titolo, codAutore, anno_int, categoria))
+                query = "INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria, PresoInPrestito) VALUES (%s,%s,%s,%s,%s,%s)"
+                cursor.execute(query, (isbn, titolo, codAutore, anno_int, categoria, False))
                 mysql.connection.commit()
                 flash("Libro aggiunto correttamente.")
                 return redirect(url_for('gestioneBiblioteca'))
             else:
                 flash("Codice autore non esistente.")
                 return redirect(url_for('gestioneBiblioteca'))
+        elif tipoForm == "eliminaAutore":
+            codAutore = request.form.get("codAutore")
 
+            #Controllo che il codAutore esista
+            query = "SELECT * FROM Autori WHERE CodAutore=%s"
+            cursor = mysql.connection.cursor()
+            cursor.execute(query, (codAutore,))
+            tmp = cursor.fetchall()
+
+            if len(tmp) > 0: #codAutore esiste
+                query = "DELETE FROM Autori WHERE CodAutore=%s"
+                cursor.execute(query, (codAutore,))
+                mysql.connection.commit()
+                flash("Autore rimosso correttamente.")
+                return redirect(url_for('gestioneBiblioteca'))
+            else:
+                flash("Autore non esistente.")
+                return redirect(url_for('gestioneBiblioteca'))
+        elif tipoForm == "eliminaLibro":
+            progressivoLibro = request.form.get("progressivoLibro")
+
+            #Controllo che il progressivo esista
+            query = "SELECT * FROM Libri WHERE Progressivo=%s"
+            cursor = mysql.connection.cursor()
+            cursor.execute(query, (progressivoLibro,))
+            tmp = cursor.fetchall()
+
+            if len(tmp) > 0: #progressivo esiste
+                query = "DELETE FROM Libri WHERE Progressivo=%s"
+                cursor.execute(query, (progressivoLibro,))
+                mysql.connection.commit()
+                flash("Libro rimosso correttamente.")
+                return redirect(url_for('gestioneBiblioteca'))
+            else:
+                flash("Progressivo non esistente.")
+                return redirect(url_for('gestioneBiblioteca'))
+
+        return redirect(url_for("gestioneBiblioteca"))
+
+@app.route("/loginAdmin", methods=["GET", "POST"])
+def loginAdmin():
+    if request.method == "GET":
+        return render_template("loginAdmin.html")
+    else:
+        pass
 
 app.run(debug=True)

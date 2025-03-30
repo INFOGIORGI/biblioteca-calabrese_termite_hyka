@@ -3,86 +3,180 @@
 
 {%block contenuto%}
 <h1>Gestione Biblioteca</h1>
-    
+
 <div>
     <h2>
         Aggiungi un nuovo autore
     </h2>
-    
+
     <form action="/gestioneBiblioteca" method="POST">
         <input type="hidden" name="form_type" value="autore">
 
         <h3>CodAutore</h3>
-        <input type="text" name="codAutore" placeholder="Es. Aut001"/>
-    
+        <input type="text" name="codAutore" placeholder="Es. Aut001" />
+
         <h3>Nome</h3>
-        <input type="text" name="nome" placeholder="Es. Luigi"/>
-    
+        <input type="text" name="nome" placeholder="Es. Luigi" />
+
         <h3>Cognome</h3>
-        <input type="text" name="cognome" placeholder="Es. Pirandello"/>
-    
+        <input type="text" name="cognome" placeholder="Es. Pirandello" />
+
         <h3>Data di nascita</h3>
         <input type="date" name="dataNascita" />
-    
+
         <h3>Data di morte (facoltativa)</h3>
         <input type="date" name="dataMorte" placeholder="Lascia vuoto se vivente">
-    
+
         <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>
         <input type="submit" value="Aggiungi" class="submit-button" />
     </form>
-    
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <div>{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-    
-    </div>
 
-    <div>
-        <h2>
-            Aggiungi un nuovo libro
-        </h2>
-        
-        <form action="/gestioneBiblioteca" method="POST">
-            <input type="hidden" name="form_type" value="libro">
+</div>
 
-            <h3>ISBN</h3>
-            <input type="text" name="isbn" placeholder="Es. 9783161484100" pattern="\d+" title="Inserisci solo numeri"
-                onkeypress="return /[0-9]/.test(event.key)" oninput="this.value = this.value.replace(/\D/g, '')" />
-        
-            <h3>Titolo</h3>
-            <input type="text" name="titolo" placeholder="Es. Il Signore degli Anelli" />
-        
-            <h3>CodAutore</h3>
-            <input type="text" name="codAutore" placeholder="Es. Aut001" />
-        
-            <h3>Anno</h3>
-            <input type="text" name="anno" placeholder="Es. 2024" pattern="\d+" title="Inserisci solo numeri"
-                onkeypress="return /[0-9]/.test(event.key)" oninput="this.value = this.value.replace(/\D/g, '')" />
-        
-            <h3>Categoria</h3>
-            <input type="text" name="categoria" placeholder="Es. Fantascienza" />
-        
-            <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>
-            <input type="submit" value="Aggiungi" class="submit-button" />
-        </form>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
+<div>
+    <h2>
+        Elimina autore
+    </h2>
+
+    <form action="/gestioneBiblioteca" method="POST">
+        <input type="hidden" name="form_type" value="eliminaAutore">
+        <h3>CodAutore</h3>
+        <input type="text" name="codAutore" placeholder="Es. Aut001" />
+
+        <input type="submit" value="Conferma" class="submit-button" />
+    </form>
+</div>
+
+<div>
+    <h2>
+        Aggiungi un nuovo libro
+    </h2>
+
+    <form action="/gestioneBiblioteca" method="POST">
+        <input type="hidden" name="form_type" value="libro">
+
+        <h3>ISBN</h3>
+        <input type="text" name="isbn" placeholder="Es. 9783161484100" pattern="\d+" title="Inserisci solo numeri"
+            onkeypress="return /[0-9]/.test(event.key)" oninput="this.value = this.value.replace(/\D/g, '')" />
+
+        <h3>Titolo</h3>
+        <input type="text" name="titolo" placeholder="Es. Il Signore degli Anelli" />
+
+        <h3>CodAutore</h3>
+        <input type="text" name="codAutore" placeholder="Es. Aut001" />
+
+        <h3>Anno</h3>
+        <input type="text" name="anno" placeholder="Es. 2024" pattern="\d+" title="Inserisci solo numeri"
+            onkeypress="return /[0-9]/.test(event.key)" oninput="this.value = this.value.replace(/\D/g, '')" />
+
+        <h3>Categoria</h3>
+        <input type="text" name="categoria" placeholder="Es. Fantascienza" />
+
+        <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>
+        <input type="submit" value="Aggiungi" class="submit-button" />
+    </form>
+</div>
+
+<div>
+    <h2>
+        Elimina libro
+    </h2>
+
+    <form action="/gestioneBiblioteca" method="POST">
+        <input type="hidden" name="form_type" value="eliminaLibro">
+        <h3>Progressivo libro</h3>
+        <input type="text" name="progressivoLibro" placeholder="Es. 1" />
+
+        <input type="submit" value="Conferma" class="submit-button" />
+    </form>
+</div>
+
+<script>
+    function resetForm() {
+        document.querySelector("form").reset();
+    }
+</script>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div>{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+<h1>Lista dei libri presenti in biblioteca</h1>
+
+<div>
+    <!-- Seleziona ordinamento -->
+    <form method="GET" action="/gestioneBiblioteca">
+        <label for="ordinamento">Ordina per:</label>
+        <select name="ordinamento" id="ordinamento" onchange="this.form.submit()">
+            <option value="Titolo" {% if ordinamento=='Titolo' %}selected{% endif %}>Titolo</option>
+            <option value="Autore" {% if ordinamento=='Autore' %}selected{% endif %}>Autore</option>
+        </select>
+
+        <!-- Seleziona genere -->
+        <label for="categoria">Filtra per genere:</label>
+        <select name="categoria" id="categoria" onchange="this.form.submit()">
+            {% for cat in categorie %}
+            <option value="{{ cat }}" {% if categoria_selezionata==cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<!-- Tabella con i libri -->
+<div class="table-container">
+    <table>
+        <tr>
+            <th>ISBN</th>
+            <th>Titolo</th>
+            <th>Codice Autore</th>
+            <th>Anno</th>
+            <th>Categoria</th>
+            <th>Progressivo</th>
+            <th>PresoInPrestito</th>
+            <th>DataInizioPrestito</th>
+            <th>Azione</th>
+        </tr>
+        {% for libro in libri %}
+        <tr>
+            <td>{{ libro[0] }}</td>
+            <td>{{ libro[1] }}</td>
+            <td>{{ libro[2] }}</td>
+            <td>{{ libro[3] }}</td>
+            <td>{{ libro[4] }}</td>
+            <td>{{ libro[5] }}</td>
+            <td>
+                {% if libro[6] == 0 %}
+                    No
+                {% else %}
+                    Sì
+                {% endif %}
+            </td>
+            <td>{{ libro[7] }}</td>
+            <td>
+                <td>
+                    {% if libro[6] == 0 %}
+                        <form action="/gestioneBiblioteca" method="post">
+                            <input type="hidden" name="form_type" value="presta">
+                            <input type="hidden" name="progressivoLibro" value="{{ libro[5] }}">
+                            <button type="submit">Presta</button>
+                        </form>
+                    {% else %}
+                        <form action="/gestioneBiblioteca" method="post">
+                            <input type="hidden" name="form_type" value="rimuovi_prestito">
+                            <input type="hidden" name="progressivoLibro" value="{{ libro[5] }}">
+                            <button type="submit">Rimuovi prestito</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </td>
+        </tr>
         {% endfor %}
-        {% endif %}
-        {% endwith %}
-        
-    </div>
+    </table>
+</div>
 
-    <script>
-        function resetForm() {
-            document.querySelector("form").reset();
-        }
-    </script>
 {%endblock%}

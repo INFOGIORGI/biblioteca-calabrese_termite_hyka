@@ -1,0 +1,16 @@
+{%extends 'base.html'%}
+{%block titolo%}Login admin{%endblock%}
+
+{%block contenuto%}
+<h1>Login admin</h1>
+
+<form action="/loginAdmin" method="post">
+    <h3>Email</h3>
+    <input type="text" name="email" />
+
+    <h3>Password</h3>
+    <input type="password" name="password" />
+
+    <input type="submit" value="Accedi" />
+</form>
+{%endblock%}
