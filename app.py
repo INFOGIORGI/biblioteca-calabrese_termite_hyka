@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, session, url_for
 from flask_mysqldb import MySQL
 import datetime
 
@@ -49,6 +49,10 @@ def libri():
 @app.route("/gestioneBiblioteca", methods=["GET", "POST"])
 def gestioneBiblioteca():
 
+    if "admin_logged_in" not in session:  # Controlla se l'admin è loggato
+        flash("Devi effettuare il login per accedere alla pagina di gestione.")
+        return redirect(url_for("loginAdmin"))
+
     ordinamento = request.args.get("ordinamento", "Titolo")
     categoria_selezionata = request.args.get("categoria", "Tutti")
 
@@ -79,7 +83,7 @@ def gestioneBiblioteca():
 
         if tipoForm == "presta":
             progressivoLibro = request.form.get("progressivoLibro")
-            data_prestito = datetime.date.today()  # Data di oggi
+            data_prestito = datetime.date.today()
 
             query = "UPDATE Libri SET PresoInPrestito = 1, DataInizioPrestito = %s WHERE Progressivo = %s AND PresoInPrestito = 0"
             cursor.execute(query, (data_prestito, progressivoLibro))
@@ -98,11 +102,21 @@ def gestioneBiblioteca():
             return redirect(url_for("gestioneBiblioteca"))
         
         elif tipoForm == "autore":
+
+            codAutore = None
+            nome = None
+            cognome = None
+            dataNascita = None
+
             codAutore = request.form.get("codAutore")
             nome = request.form.get("nome")
             cognome = request.form.get("cognome")
             dataNascita = request.form.get("dataNascita")
             dataMorte = request.form.get("dataMorte")
+
+            if codAutore == None or nome == None or dataNascita == None:
+                flash("Inserisci le informazioni obbligatorie.")
+                return redirect(url_for("gestioneBiblioteca"))
 
             # Controllo se l'autore esiste già
             query = "SELECT * FROM Autori WHERE CodAutore=%s"
@@ -197,6 +211,25 @@ def loginAdmin():
     if request.method == "GET":
         return render_template("loginAdmin.html")
     else:
-        pass
+        username = request.form.get("email")
+        password = request.form.get("password")
+
+        query = "SELECT * FROM Admin WHERE email=%s AND password=%s"
+        cursor = mysql.connection.cursor()
+        cursor.execute(query, (username, password))
+
+        tmp = cursor.fetchall()
+
+        if tmp:
+            session["admin_logged_in"] = True  # Imposta la sessione
+            return redirect(url_for("gestioneBiblioteca"))
+        else:
+            flash("Credenziali errate. Riprova.")
+            return redirect(url_for("loginAdmin"))
+        
+@app.route("/logout")
+def logout():
+    session.pop("admin_logged_in", None)  # Elimina la sessione
+    return redirect(url_for("homePage"))
 
 app.run(debug=True)

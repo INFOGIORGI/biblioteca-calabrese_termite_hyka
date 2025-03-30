@@ -13,7 +13,11 @@
     <a href="{{ url_for('homePage') }}">Home Page</a>
     <a href="{{ url_for('libri') }}">Libri</a>
     <a href="{{ url_for('gestioneBiblioteca') }}">Gestione biblioteca</a>
+    {% if session.get("admin_logged_in") %}
+    <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
     <a href="{{ url_for('loginAdmin') }}">Login admin</a>
+    {% endif %}
   </nav>
   {% block contenuto %}{% endblock %}
 
