@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
-app.secret_key = "AudiS3"
+app.secret_key = "daniel"
 app.config['MYSQL_HOST'] = '138.41.20.102'
 app.config['MYSQL_PORT'] = 53306
 app.config['MYSQL_USER'] = '5di'
@@ -44,36 +44,69 @@ def libri():
 
     return render_template("libri.html", libri=listaLibri, ordinamento=ordinamento, categorie=categorie, categoria_selezionata=categoria_selezionata)
 
-@app.route("/aggiungiLibro", methods=["GET", "POST"])
-def aggiungiLibro():
+
+@app.route("/gestioneBiblioteca", methods=["GET", "POST"])
+def gestioneBiblioteca():
     if request.method == 'GET':
-        return render_template("aggiungiLibro.html")
+        return render_template("gestioneBiblioteca.html")
     else:
-        isbn = request.form.get("isbn")
-        titolo = request.form.get("titolo")
-        codAutore = request.form.get("codAutore")
-        anno = request.form.get("anno")
-        categoria = request.form.get("categoria")
+        tipoForm = request.form.get("form_type")
+        if tipoForm == "autore":
+            codAutore = request.form.get("codAutore")
+            nome = request.form.get("nome")
+            cognome = request.form.get("cognome")
+            dataNascita = request.form.get("dataNascita")
+            dataMorte = request.form.get("dataMorte")
 
-        anno_int = int(anno)
+            # Controllo se l'autore esiste già
+            query = "SELECT * FROM Autori WHERE CodAutore=%s"
+            cursor = mysql.connection.cursor()
+            cursor.execute(query, (codAutore,))
+            tmp = cursor.fetchall()
 
+            if len(tmp) > 0:
+                flash("Autore con stesso codice già esistente.")
+                return redirect(url_for("gestioneBiblioteca"))
+            else: 
+                # Se dataMorte è vuota, passiamo NULL
+                if not dataMorte:
+                    query = "INSERT INTO Autori (CodAutore, Nome, Cognome, DataNascita, DataMorte) VALUES (%s,%s,%s,%s,NULL)"
+                    cursor.execute(query, (codAutore, nome, cognome, dataNascita))
+                else:
+                    query = "INSERT INTO Autori (CodAutore, Nome, Cognome, DataNascita, DataMorte) VALUES (%s,%s,%s,%s,%s)"
+                    cursor.execute(query, (codAutore, nome, cognome, dataNascita, dataMorte))
+                
+                mysql.connection.commit()
 
-        print(codAutore)
-
-        #Controllo che il codAutore esista
-        query = "SELECT * FROM Autori WHERE CodAutore=%s"
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (codAutore,))
-        tmp = cursor.fetchall()
-
-        if len(tmp) > 0: #codAutore esiste
-            query = "INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria) VALUES (%s,%s,%s,%s,%s)"
-            cursor.execute(query, (isbn, titolo, codAutore, anno_int, categoria))
-            mysql.connection.commit()
-            flash("Libro aggiunto correttamente.")
-            return redirect(url_for('aggiungiLibro'))
+                flash("Autore inserito correttamente")
+                return redirect(url_for("gestioneBiblioteca"))
         else:
-            flash("Codice autore non esistente.")
-            return redirect(url_for('aggiungiLibro'))
+            isbn = request.form.get("isbn")
+            titolo = request.form.get("titolo")
+            codAutore = request.form.get("codAutore")
+            anno = request.form.get("anno")
+            categoria = request.form.get("categoria")
+
+            anno_int = int(anno)
+
+
+            print(codAutore)
+
+            #Controllo che il codAutore esista
+            query = "SELECT * FROM Autori WHERE CodAutore=%s"
+            cursor = mysql.connection.cursor()
+            cursor.execute(query, (codAutore,))
+            tmp = cursor.fetchall()
+
+            if len(tmp) > 0: #codAutore esiste
+                query = "INSERT INTO Libri (ISBNLibro, Titolo, CodAutore, Anno, Categoria) VALUES (%s,%s,%s,%s,%s)"
+                cursor.execute(query, (isbn, titolo, codAutore, anno_int, categoria))
+                mysql.connection.commit()
+                flash("Libro aggiunto correttamente.")
+                return redirect(url_for('gestioneBiblioteca'))
+            else:
+                flash("Codice autore non esistente.")
+                return redirect(url_for('gestioneBiblioteca'))
+
 
 app.run(debug=True)

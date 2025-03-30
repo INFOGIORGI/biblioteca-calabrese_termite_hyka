@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
+
 {% block titolo %}Aggiungi libro{% endblock %}
+
 {% block contenuto %}
 <p>
 <h1>
@@ -24,18 +26,9 @@
     <h3>Categoria</h3>
     <input type="text" name="categoria" placeholder="Es. Fantascienza" />
 
-
-    <div class="button-container">
-        <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>
-        <input type="submit" value="Aggiungi" class="submit-button" />
-    </div>
+    <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>
+    <input type="submit" value="Aggiungi" class="submit-button" />
 </form>
-
-<script>
-    function resetForm() {
-        document.querySelector("form").reset();
-    }
-</script>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
@@ -47,6 +40,11 @@
 
 </p>
 
-    
+
+<script>
+    function resetForm() {
+        document.querySelector("form").reset();
+    }
+</script>
 
 {% endblock %}

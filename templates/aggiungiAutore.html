@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block titolo %}Aggiungi autore{% endblock %}
+
+{% block contenuto %}
+
+<div>
+<h1>
+    Aggiungi un nuovo autore
+</h1>
+
+<form action="/aggiungiAutore" method="POST">
+    <h3>CodAutore</h3>
+    <input type="text" name="codAutore" />
+
+    <h3>Nome</h3>
+    <input type="text" name="nome" />
+
+    <h3>Cognome</h3>
+    <input type="text" name="cognome" />
+
+    <h3>Data di nascita</h3>
+    <input type="date" name="dataNascita" />
+
+    <h3>Data di morte (facoltativa)</h3>
+    <input type="date" name="dataMorte" placeholder="Lascia vuoto se vivente">
+
+    <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>
+    <input type="submit" value="Aggiungi" class="submit-button" />
+</form>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div>{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+</div>
+
+
+<script>
+    function resetForm() {
+        document.querySelector("form").reset();
+    }
+</script>
+
+{% endblock %}
