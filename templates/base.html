@@ -19,7 +19,9 @@
     <a href="{{ url_for('loginAdmin') }}">Login admin</a>
     {% endif %}
   </nav>
-  {% block contenuto %}{% endblock %}
+
+  <main class="container">{% block contenuto %}{% endblock %}
+  </main>
 
 
 </body>
