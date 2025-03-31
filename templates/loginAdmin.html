@@ -4,6 +4,14 @@
 {%block contenuto%}
 <h1>Login admin</h1>
 
+{% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
 <form action="/loginAdmin" method="post">
     <h3>Email</h3>
     <input type="text" name="email" />
@@ -14,12 +22,6 @@
     <input type="submit" value="Accedi" />
 </form>
 
-{% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="flash-message">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+
 
 {%endblock%}

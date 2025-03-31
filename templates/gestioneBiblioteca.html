@@ -4,6 +4,14 @@
 {%block contenuto%}
 <h1>Gestione Biblioteca</h1>
 
+{% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
 <div>
     <h2>
         Aggiungi un nuovo autore
@@ -25,7 +33,7 @@
         <input type="date" name="dataNascita" />
 
         <h3>Data di morte (facoltativa)</h3>
-        <input type="date" name="dataMorte" placeholder="Lascia vuoto se vivente">
+        <input type="date" name="dataMorte">
 
         <button type="button" onclick="resetForm()" class="cancel-button">Cancella</button>
         <input type="submit" value="Aggiungi" class="submit-button" />
@@ -171,12 +179,6 @@
 </div>
 
 
-{% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="flash-message">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+
 
 {%endblock%}
